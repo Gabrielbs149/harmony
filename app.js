@@ -430,15 +430,25 @@ function toggleMic() { micEnabled = !micEnabled; if (localMic) localMic.getAudio
 function toggleDeafen() { deafened = !deafened; document.querySelectorAll("audio[data-peer]").forEach((a) => (a.muted = deafened)); if (deafened && micEnabled) toggleMic(); sendWS({ type: "voice-state", deafened }); $("#deafBtn").classList.toggle("off", deafened); }
 
 // ==================== ADMIN MODAL ====================
+function rankOf(roleId) { const r = serverState.roles.find((x) => x.id === roleId); return r ? r.rank : 0; }
 function renderAccounts(list) {
   const box = $("#accountList"); box.innerHTML = "";
+  const myRank = rankOf(me.roleId);
   for (const acc of list.sort((a, b) => a.username.localeCompare(b.username))) {
     const row = el("div", "acc-row");
     row.append(el("span", "an", acc.username));
     const sel = document.createElement("select");
     for (const r of serverState.roles) { const o = el("option", null, r.name); o.value = r.id; if (r.id === acc.roleId) o.selected = true; sel.append(o); }
     sel.onchange = () => sendWS({ type: "admin", action: "set-role", userId: acc.username, roleId: sel.value });
-    row.append(sel); box.append(row);
+    row.append(sel);
+    // excluir conta: só de rank menor que o meu e que não seja eu
+    if (acc.username.toLowerCase() !== me.username.toLowerCase() && rankOf(acc.roleId) < myRank) {
+      const del = el("button", "acc-del", "🗑️");
+      del.title = "Excluir conta permanentemente";
+      del.onclick = () => { if (confirm("Excluir a conta de " + acc.username + " de vez? Não dá pra desfazer.")) sendWS({ type: "admin", action: "delete-account", userId: acc.username }); };
+      row.append(del);
+    }
+    box.append(row);
   }
 }
 function renderRolesAdmin() {

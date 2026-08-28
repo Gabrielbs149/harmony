@@ -218,6 +218,8 @@ a { color: #00a8fc; text-decoration: none; }
 .acc-row, .role-row { display: flex; align-items: center; gap: 8px; padding: 8px; background: #1e1f22; border-radius: 6px; }
 .acc-row .an { flex: 1; font-weight: 500; }
 .acc-row select { flex: 0 0 160px; }
+.acc-row .acc-del { background: none; color: var(--text-dim); font-size: 16px; flex: 0 0 auto; }
+.acc-row .acc-del:hover { color: var(--red); }
 .role-row .swatch { width: 16px; height: 16px; border-radius: 50%; flex: 0 0 auto; }
 .role-row .rn { flex: 1; }
 .role-row .rrank { color: var(--text-dim); font-size: 12px; }

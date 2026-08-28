@@ -224,6 +224,20 @@ app.get("/api/me", (req, res) => {
   res.json({ user: { username: acc.username, roleId: acc.roleId } });
 });
 
+app.post("/api/delete-account", (req, res) => {
+  const username = String(req.body.username || "").trim();
+  const password = String(req.body.password || "");
+  const acc = accounts[username.toLowerCase()];
+  if (!acc || !verifyPassword(password, acc.salt, acc.hash))
+    return res.status(401).json({ error: "Usuário ou senha inválidos" });
+  const onl = online.get(acc.username);
+  if (onl) { try { onl.ws.close(); } catch {} online.delete(acc.username); }
+  delete accounts[username.toLowerCase()];
+  persistAccounts();
+  broadcastPresence();
+  res.json({ ok: true });
+});
+
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
@@ -429,6 +443,18 @@ function handleAdmin(me, msg) {
       send(onl.ws, { type: "kicked" });
       try { onl.ws.close(); } catch {}
     }
+  } else if (a === "delete-account") {
+    const key = String(msg.userId || "").toLowerCase();
+    const acc = accounts[key];
+    if (!acc) return;
+    if (key === me.username.toLowerCase()) return; // nao apaga a si mesmo
+    if (roleRank(acc.roleId) >= roleRank(me.roleId)) return; // so rank menor
+    const onl = online.get(acc.username);
+    if (onl) { send(onl.ws, { type: "kicked" }); try { onl.ws.close(); } catch {} online.delete(acc.username); }
+    delete accounts[key];
+    persistAccounts();
+    send(me.ws, { type: "accounts", list: Object.values(accounts).map((ac) => ({ username: ac.username, roleId: ac.roleId })) });
+    broadcastPresence();
   } else if (a === "rename-server") {
     const name = String(msg.name || "").slice(0, 40).trim();
     if (name) { state.serverName = name; persistState(); broadcastState(); }
