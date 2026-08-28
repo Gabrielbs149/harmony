@@ -16,7 +16,12 @@ const DATA_FILE = join(__dirname, "data.json");
 const MSG_LIMIT = 200; // mensagens guardadas por canal
 
 const app = express();
-app.use(express.static(join(__dirname, "public")));
+// Serve a interface de `public/` se existir; senao, da propria pasta do server
+// (assim funciona tanto com a estrutura public/ quanto com os arquivos na raiz).
+const publicDir = existsSync(join(__dirname, "public"))
+  ? join(__dirname, "public")
+  : __dirname;
+app.use(express.static(publicDir));
 const httpServer = createServer(app);
 const wss = new WebSocketServer({ server: httpServer });
 
