@@ -1,0 +1,17 @@
+{
+  "name": "harmony-chat",
+  "version": "1.0.0",
+  "description": "Discord-style chat com voz, video e compartilhamento de tela (WebRTC mesh)",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
+  }
+}
