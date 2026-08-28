@@ -3,147 +3,173 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harmony</title>
+  <title>Feap Avaré</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>" />
 </head>
 <body>
-  <!-- Tela de entrada -->
-  <div id="login" class="login">
-    <div class="login-card">
-      <div class="logo">🎧 Harmony</div>
-      <p class="sub">Entre com um apelido pra conversar com a galera.</p>
-      <input id="nickInput" maxlength="32" placeholder="Seu apelido" autocomplete="off" />
-      <button id="joinBtn">Entrar</button>
-      <p class="hint">O primeiro a entrar vira o <b>Dono</b> do servidor.</p>
+  <!-- ===== LOGIN / REGISTRO ===== -->
+  <div id="auth" class="auth">
+    <div class="auth-card">
+      <div class="auth-logo">🏛️ Feap Avaré</div>
+      <p class="auth-sub" id="authSub">Que bom te ver de novo!</p>
+      <div id="authError" class="auth-error hidden"></div>
+      <label>Usuário</label>
+      <input id="authUser" maxlength="20" placeholder="seu_usuario" autocomplete="username" />
+      <label>Senha</label>
+      <input id="authPass" type="password" maxlength="64" placeholder="••••••••" autocomplete="current-password" />
+      <button id="authBtn">Entrar</button>
+      <p class="auth-switch">
+        <span id="authSwitchText">Precisa de uma conta?</span>
+        <a id="authSwitch" href="#">Registrar</a>
+      </p>
     </div>
   </div>
 
-  <!-- App -->
+  <!-- ===== APP ===== -->
   <div id="app" class="app hidden">
-    <!-- Coluna de canais -->
-    <aside class="channels">
-      <div class="server-head">
-        <span id="serverName">Servidor</span>
-        <button id="serverSettingsBtn" class="icon-btn" title="Config. do servidor">⚙️</button>
+    <!-- Barra de servidores -->
+    <nav class="rail">
+      <div class="rail-server active" id="railServer">🏛️</div>
+      <div class="rail-sep"></div>
+      <div class="rail-btn" title="Adicionar (em breve)">＋</div>
+      <div class="rail-btn" title="Explorar (em breve)">🧭</div>
+    </nav>
+
+    <!-- Sidebar de canais -->
+    <aside class="sidebar">
+      <div class="srv-head" id="srvHead">
+        <span id="serverName">Feap Avaré</span>
+        <span class="chev">⌄</span>
+      </div>
+      <div class="srv-menu hidden" id="srvMenu">
+        <button id="openServerSettings" class="admin-only">⚙️ Configurações do servidor</button>
+        <button id="menuInvite">🔗 Copiar link do convite</button>
+        <button id="menuLogout" class="danger">↩️ Sair da conta</button>
       </div>
 
-      <div class="ch-section">
-        <div class="ch-section-title">
-          <span>CANAIS DE TEXTO</span>
-          <button class="add-ch admin-only" data-kind="text" title="Novo canal de texto">＋</button>
-        </div>
-        <ul id="textChannels" class="ch-list"></ul>
-      </div>
+      <div class="channels" id="channels"></div>
 
-      <div class="ch-section">
-        <div class="ch-section-title">
-          <span>CANAIS DE VOZ</span>
-          <button class="add-ch admin-only" data-kind="voice" title="Novo canal de voz">＋</button>
-        </div>
-        <ul id="voiceChannels" class="ch-list voice"></ul>
-      </div>
-
-      <!-- Painel do usuario (rodape) -->
-      <div class="me-bar">
-        <div class="me-info">
-          <span class="avatar" id="meAvatar">?</span>
-          <div>
-            <div id="meName" class="me-name">—</div>
-            <div id="meRole" class="me-role">—</div>
+      <!-- Barra do usuario -->
+      <div class="userbar">
+        <div class="ub-info">
+          <span class="ub-avatar" id="ubAvatar">?</span>
+          <div class="ub-text">
+            <div class="ub-name" id="ubName">—</div>
+            <div class="ub-status" id="ubStatus">Online</div>
           </div>
         </div>
-        <div class="me-controls">
-          <button id="micBtn" class="ctrl" title="Microfone">🎤</button>
-          <button id="deafBtn" class="ctrl" title="Sons">🔊</button>
-          <button id="settingsBtn" class="ctrl" title="Configurações de áudio/vídeo">⚙️</button>
+        <div class="ub-ctrls">
+          <button id="micBtn" class="ub-btn" title="Microfone">🎙️</button>
+          <button id="deafBtn" class="ub-btn" title="Sons">🎧</button>
+          <button id="avBtn" class="ub-btn" title="Áudio/Vídeo">⚙️</button>
         </div>
       </div>
     </aside>
 
-    <!-- Area central -->
+    <!-- Centro -->
     <main class="main">
       <header class="main-head">
-        <span id="channelTitle"># geral</span>
-        <div id="voiceBar" class="voice-bar hidden">
-          <span id="voiceBarName">🔊 —</span>
-          <button id="shareBtn" class="vbtn">🖥️ Compartilhar tela</button>
+        <span class="mh-icon" id="mhIcon">#</span>
+        <span id="channelTitle">geral</span>
+        <div class="voice-bar hidden" id="voiceBar">
+          <span id="voiceBarName" class="vb-name">🔊 —</span>
+          <button id="shareBtn" class="vbtn">🖥️ Tela</button>
           <button id="camBtn" class="vbtn">📷 Câmera</button>
           <button id="leaveVoiceBtn" class="vbtn danger">📞 Sair</button>
         </div>
+        <button id="toggleMembers" class="mh-right" title="Mostrar membros">👥</button>
       </header>
 
-      <!-- Grade de video (compartilhamento/camera) -->
       <div id="stage" class="stage hidden"></div>
-
-      <!-- Mensagens -->
       <div id="messages" class="messages"></div>
 
-      <!-- Caixa de texto -->
       <form id="composer" class="composer">
         <input id="msgInput" placeholder="Conversar em #geral" autocomplete="off" maxlength="2000" />
         <button type="submit">Enviar</button>
       </form>
     </main>
 
-    <!-- Coluna de membros -->
-    <aside class="members">
-      <div class="members-title">MEMBROS — <span id="memberCount">0</span></div>
+    <!-- Membros (agrupados por cargo) -->
+    <aside class="members" id="members">
       <ul id="memberList" class="member-list"></ul>
     </aside>
   </div>
 
-  <!-- Modal de configuracoes de A/V -->
+  <!-- ===== Menu de contexto membro ===== -->
+  <div id="ctxMenu" class="ctx-menu hidden"></div>
+
+  <!-- ===== Modal A/V ===== -->
   <div id="avModal" class="modal hidden">
     <div class="modal-card">
-      <h3>Configurações de áudio e vídeo</h3>
-      <label>Microfone</label>
-      <select id="micSelect"></select>
-      <label>Câmera</label>
-      <select id="camSelect"></select>
-      <div class="row">
+      <h3>Áudio e vídeo</h3>
+      <label>Microfone</label><select id="micSelect"></select>
+      <label>Câmera</label><select id="camSelect"></select>
+      <div class="mrow">
         <label class="chk"><input type="checkbox" id="noiseChk" checked /> Redução de ruído</label>
         <label class="chk"><input type="checkbox" id="echoChk" checked /> Cancelar eco</label>
       </div>
-      <h4>Qualidade do compartilhamento de tela</h4>
+      <h4>Compartilhamento de tela</h4>
       <label>Resolução</label>
-      <select id="resSelect">
-        <option value="1080">1080p (Full HD)</option>
-        <option value="1440">1440p (2K)</option>
-        <option value="720">720p (HD)</option>
-      </select>
-      <label>Taxa de quadros</label>
-      <select id="fpsSelect">
-        <option value="60">60 fps</option>
-        <option value="30">30 fps</option>
-      </select>
-      <label>Bitrate máx: <span id="brLabel">10</span> Mbps</label>
+      <select id="resSelect"><option value="1080">1080p</option><option value="1440">1440p</option><option value="720">720p</option></select>
+      <label>Quadros</label>
+      <select id="fpsSelect"><option value="60">60 fps</option><option value="30">30 fps</option></select>
+      <label>Bitrate: <span id="brLabel">10</span> Mbps</label>
       <input type="range" id="brRange" min="2" max="25" value="10" />
-      <label class="chk"><input type="checkbox" id="shareAudioChk" checked /> Compartilhar áudio do sistema</label>
-      <div class="modal-actions">
-        <button id="avCloseBtn">Fechar</button>
-      </div>
+      <label class="chk"><input type="checkbox" id="shareAudioChk" checked /> Áudio do sistema</label>
+      <div class="modal-actions"><button id="avClose">Fechar</button></div>
     </div>
   </div>
 
-  <!-- Modal de config do servidor (admin) -->
+  <!-- ===== Modal Config Servidor (admin) ===== -->
   <div id="srvModal" class="modal hidden">
-    <div class="modal-card">
-      <h3>Configurações do servidor</h3>
-      <label>Nome do servidor</label>
-      <div class="row">
-        <input id="srvNameInput" maxlength="40" />
-        <button id="srvRenameBtn">Salvar</button>
+    <div class="modal-card wide">
+      <div class="tabs">
+        <button class="tab active" data-tab="geral">Geral</button>
+        <button class="tab" data-tab="membros">Membros</button>
+        <button class="tab" data-tab="cargos">Cargos</button>
+        <button class="tab" data-tab="canais">Canais</button>
       </div>
-      <p class="hint">Você é admin. Clique com o botão direito num membro para dar cargo ou expulsar.</p>
-      <div class="modal-actions">
-        <button id="srvCloseBtn">Fechar</button>
+
+      <div class="tab-pane" data-pane="geral">
+        <label>Nome do servidor</label>
+        <div class="mrow">
+          <input id="srvNameInput" maxlength="40" />
+          <button id="srvRename" class="btn-primary">Salvar</button>
+        </div>
       </div>
+
+      <div class="tab-pane hidden" data-pane="membros">
+        <p class="muted">Dê cargos ("carga") pra cada pessoa. Vale pra quem já se cadastrou, mesmo offline.</p>
+        <div id="accountList" class="acc-list"></div>
+      </div>
+
+      <div class="tab-pane hidden" data-pane="cargos">
+        <div id="roleList" class="role-list"></div>
+        <h4>Criar cargo</h4>
+        <div class="mrow">
+          <input id="newRoleName" placeholder="Ex: Polícia Federal" maxlength="30" />
+          <input id="newRoleColor" type="color" value="#7289da" />
+          <input id="newRoleRank" type="number" min="1" max="79" value="20" title="Prioridade (maior aparece em cima)" />
+          <button id="addRole" class="btn-primary">Criar</button>
+        </div>
+      </div>
+
+      <div class="tab-pane hidden" data-pane="canais">
+        <h4>Criar categoria</h4>
+        <div class="mrow"><input id="newCatName" placeholder="Nome da categoria" maxlength="40" /><button id="addCat" class="btn-primary">Criar</button></div>
+        <h4>Criar canal</h4>
+        <div class="mrow">
+          <input id="newChName" placeholder="nome-do-canal" maxlength="40" />
+          <select id="newChType"><option value="text">Texto</option><option value="voice">Voz</option></select>
+          <select id="newChCat"></select>
+          <button id="addCh" class="btn-primary">Criar</button>
+        </div>
+      </div>
+
+      <div class="modal-actions"><button id="srvClose">Fechar</button></div>
     </div>
   </div>
-
-  <!-- Menu de contexto de membro -->
-  <div id="ctxMenu" class="ctx-menu hidden"></div>
 
   <script src="app.js"></script>
 </body>
