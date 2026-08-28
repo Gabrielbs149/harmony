@@ -1,27 +1,61 @@
 {
-  "serverName": "Meu Servidor",
-  "textChannels": [
+  "serverName": "Feap Avaré",
+  "categories": [
     {
-      "id": "geral",
-      "name": "geral"
+      "id": "boas-vindas",
+      "name": "boas-vindas"
     },
     {
-      "id": "jogos",
-      "name": "jogos"
+      "id": "textos",
+      "name": "Canais de Texto"
+    },
+    {
+      "id": "vozes",
+      "name": "Canais de Voz"
+    }
+  ],
+  "channels": [
+    {
+      "id": "regras",
+      "name": "regras",
+      "type": "text",
+      "categoryId": "boas-vindas"
+    },
+    {
+      "id": "avisos",
+      "name": "avisos",
+      "type": "text",
+      "categoryId": "boas-vindas"
+    },
+    {
+      "id": "geral",
+      "name": "geral",
+      "type": "text",
+      "categoryId": "textos"
     },
     {
       "id": "off-topic",
-      "name": "off-topic"
-    }
-  ],
-  "voiceChannels": [
+      "name": "off-topic",
+      "type": "text",
+      "categoryId": "textos"
+    },
+    {
+      "id": "memes",
+      "name": "memes",
+      "type": "text",
+      "categoryId": "textos"
+    },
     {
       "id": "sala-1",
-      "name": "Sala 1"
+      "name": "Sala 1",
+      "type": "voice",
+      "categoryId": "vozes"
     },
     {
       "id": "sala-2",
-      "name": "Sala 2"
+      "name": "Sala 2",
+      "type": "voice",
+      "categoryId": "vozes"
     }
   ],
   "roles": [
@@ -29,46 +63,40 @@
       "id": "owner",
       "name": "Dono",
       "color": "#f04747",
-      "rank": 100
+      "rank": 100,
+      "hoist": true
     },
     {
       "id": "admin",
       "name": "Admin",
       "color": "#faa61a",
-      "rank": 80
+      "rank": 80,
+      "hoist": true
+    },
+    {
+      "id": "policia-federal-scw",
+      "name": "Polícia Federal",
+      "color": "#3498db",
+      "rank": 50,
+      "hoist": true
     },
     {
       "id": "membro",
       "name": "Membro",
       "color": "#43b581",
-      "rank": 10
+      "rank": 10,
+      "hoist": true
     }
   ],
   "messages": {
-    "geral": [
+    "regras": [
       {
-        "id": "b1eeeaea-bffe-4539-a857-3f9e9d4cd501",
-        "userId": "3e26bd20-7ff6-4918-9475-2b5edd57830e",
+        "id": "e55f001b-866f-482e-9956-119ae1fc3030",
+        "userId": "Gabriel",
         "name": "Gabriel",
         "color": "#f04747",
-        "text": "Fala galera, testando o Harmony!",
-        "ts": 1787940539195
-      },
-      {
-        "id": "b83bd768-c65d-4644-9764-6ebfb0205ff9",
-        "userId": "7292fd14-4f03-4150-9bfd-0574eec11da9",
-        "name": "Gabriel",
-        "color": "#f04747",
-        "text": "via-dispatch",
-        "ts": 1787940630128
-      },
-      {
-        "id": "b775efc9-e9a7-4a84-b28b-3c3de3d907b4",
-        "userId": "fb7aa47e-ceee-406d-988f-3cc1c55009c2",
-        "name": "pedro",
-        "color": "#43b581",
-        "text": "adsd",
-        "ts": 1787940663020
+        "text": "primeira mensagem no Feap Avaré v2",
+        "ts": 1787946140692
       }
     ]
   }

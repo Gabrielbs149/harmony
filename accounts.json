@@ -1,0 +1,23 @@
+{
+  "gabriel": {
+    "username": "Gabriel",
+    "salt": "21c9cead0ba42f6a404a028bfc4152d1",
+    "hash": "1f4a31929446cb296c93ca961e61c82122dc8f6ed3bee230286d658a4c64fee7588472c4f3362945cb8aa72494b1a996fa74b471eb91caed17805f3fef7c7d31",
+    "roleId": "owner",
+    "createdAt": 1787946029809
+  },
+  "joao": {
+    "username": "Joao",
+    "salt": "7c8bca983fed49d48b6ba6c9c467a999",
+    "hash": "636159032e7b843f1c69e6313903642d61f1a9560117fb356d6621c85c68d4806d104d25305c06b3f53e8cba243c670433bc2af17b0c1ff29466386d288c3bcc",
+    "roleId": "admin",
+    "createdAt": 1787946164063
+  },
+  "maria": {
+    "username": "Maria",
+    "salt": "13d10177d5d42fadacd434a1b8ab100c",
+    "hash": "eab7675d02ead6865689bbd97f2b6987383a096680da8c451120f0e2e261f49811596133ff3f98d8a2d3b9ecf6067859d3d5c5f791b038f2725a928b49661e47",
+    "roleId": "policia-federal-scw",
+    "createdAt": 1787946164174
+  }
+}
