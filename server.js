@@ -19,6 +19,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 const MSG_LIMIT = 200;
 const SECRET = process.env.AUTH_SECRET || "feap-avare-troque-este-segredo-em-producao";
+// Dono garantido: esse usuario e sempre "owner", independente da ordem de cadastro.
+const OWNER_USERNAME = (process.env.OWNER_USERNAME || "").trim().toLowerCase();
 
 // ---------- Armazenamento (Redis Upstash OU arquivo) ----------
 const R_URL = process.env.UPSTASH_REDIS_REST_URL;
@@ -91,6 +93,16 @@ async function loadAll() {
     } catch { accounts = {}; }
   }
   state.messages = state.messages || {};
+  // Se ha um dono designado, qualquer OUTRO owner e rebaixado a admin (limpa contas antigas).
+  if (OWNER_USERNAME) {
+    let changed = false;
+    for (const key in accounts) {
+      if (key !== OWNER_USERNAME && accounts[key].roleId === "owner") {
+        accounts[key].roleId = "admin"; changed = true;
+      }
+    }
+    if (changed) persistAccounts();
+  }
   console.log(`Armazenamento: ${useRedis ? "Upstash Redis (persistente)" : "arquivo local"}`);
   console.log(`Contas carregadas: ${Object.keys(accounts).length}`);
 }
@@ -145,6 +157,16 @@ function verifyToken(token) {
 }
 const validName = (s) => /^[a-zA-Z0-9_]{3,20}$/.test(s);
 
+// Se a conta for o dono designado (OWNER_USERNAME), garante o cargo owner.
+function ensureOwner(acc) {
+  if (!acc) return acc;
+  if (OWNER_USERNAME && acc.username.toLowerCase() === OWNER_USERNAME && acc.roleId !== "owner") {
+    acc.roleId = "owner";
+    persistAccounts();
+  }
+  return acc;
+}
+
 // ---------- App HTTP ----------
 const app = express();
 app.use(express.json());
@@ -159,7 +181,11 @@ app.post("/api/register", (req, res) => {
   const key = username.toLowerCase();
   if (accounts[key]) return res.status(409).json({ error: "Esse usuário já existe" });
   const { salt, hash } = hashPassword(password);
-  const roleId = Object.keys(accounts).length === 0 ? "owner" : "membro";
+  const isDesignatedOwner = OWNER_USERNAME && key === OWNER_USERNAME;
+  // Se ha um dono designado, so ele e owner. Senao, o 1o a se cadastrar vira owner.
+  let roleId = "membro";
+  if (isDesignatedOwner) roleId = "owner";
+  else if (!OWNER_USERNAME && Object.keys(accounts).length === 0) roleId = "owner";
   accounts[key] = { username, salt, hash, roleId, createdAt: Date.now() };
   persistAccounts();
   res.json({ token: makeToken(username), user: { username, roleId } });
@@ -171,6 +197,7 @@ app.post("/api/login", (req, res) => {
   const acc = accounts[username.toLowerCase()];
   if (!acc || !verifyPassword(password, acc.salt, acc.hash))
     return res.status(401).json({ error: "Usuário ou senha inválidos" });
+  ensureOwner(acc);
   res.json({ token: makeToken(acc.username), user: { username: acc.username, roleId: acc.roleId } });
 });
 
@@ -178,8 +205,18 @@ app.get("/api/me", (req, res) => {
   const token = (req.headers.authorization || "").replace(/^Bearer /, "");
   const username = verifyToken(token);
   if (!username) return res.status(401).json({ error: "token inválido" });
-  const acc = accounts[username.toLowerCase()];
+  const acc = ensureOwner(accounts[username.toLowerCase()]);
   res.json({ user: { username: acc.username, roleId: acc.roleId } });
+});
+
+app.get("/api/health", (_req, res) => {
+  res.json({
+    ok: true,
+    storage: useRedis ? "redis" : "file",
+    accounts: Object.keys(accounts).length,
+    ownerConfigured: !!OWNER_USERNAME,
+    online: online.size,
+  });
 });
 
 const httpServer = createServer(app);
@@ -231,7 +268,7 @@ wss.on("connection", (ws) => {
     if (msg.type === "auth") {
       const username = verifyToken(msg.token);
       if (!username) { send(ws, { type: "auth-fail" }); return; }
-      const acc = accounts[username.toLowerCase()];
+      const acc = ensureOwner(accounts[username.toLowerCase()]);
       // se ja estava online em outra aba, derruba a antiga
       const prev = online.get(acc.username);
       if (prev && prev.ws !== ws) { try { prev.ws.close(); } catch {} }
