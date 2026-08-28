@@ -41,6 +41,10 @@ function initAuth() {
   }
   $("#authSwitch").onclick = (e) => { e.preventDefault(); toggleAuthMode(); };
   $("#authBtn").onclick = doAuth;
+  $("#updateBtn").onclick = () => location.reload();
+  $("#updateLater").onclick = () => $("#updateBar").classList.add("hidden");
+  checkVersion(); // registra a versão atual já na tela de login
+  setInterval(checkVersion, 60000); // checa a cada 1 min (login ou dentro do app)
   $("#authPass").addEventListener("keydown", (e) => { if (e.key === "Enter") doAuth(); });
   $("#authUser").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#authPass").focus(); });
 }
@@ -77,6 +81,18 @@ function logout() {
   if (ws) ws.close();
   location.reload();
 }
+
+// ==================== ATUALIZAÇÃO AUTOMÁTICA ====================
+let myVersion = null;
+async function checkVersion() {
+  try {
+    const r = await fetch("/api/version", { cache: "no-store" });
+    const { version } = await r.json();
+    if (myVersion === null) myVersion = version;
+    else if (version && version !== myVersion) showUpdateBar();
+  } catch {}
+}
+function showUpdateBar() { $("#updateBar").classList.remove("hidden"); }
 
 // ==================== WEBSOCKET ====================
 function startApp() {

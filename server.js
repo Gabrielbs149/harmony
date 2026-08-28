@@ -13,6 +13,7 @@ import {
   randomBytes,
   timingSafeEqual,
   createHmac,
+  createHash,
 } from "crypto";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -172,6 +173,20 @@ const app = express();
 app.use(express.json());
 const publicDir = existsSync(join(__dirname, "public")) ? join(__dirname, "public") : __dirname;
 app.use(express.static(publicDir));
+
+// Versao do app = hash dos arquivos da interface. Muda so quando o codigo muda
+// (nao muda quando o servidor so reinicia), pra avisar de atualizacao sem falso alarme.
+function computeVersion() {
+  try {
+    const h = createHash("sha1");
+    for (const f of ["index.html", "app.js", "style.css"]) {
+      try { h.update(readFileSync(join(publicDir, f))); } catch {}
+    }
+    return h.digest("hex").slice(0, 12);
+  } catch { return "dev"; }
+}
+const APP_VERSION = computeVersion();
+app.get("/api/version", (_req, res) => res.json({ version: APP_VERSION }));
 
 app.post("/api/register", (req, res) => {
   const username = String(req.body.username || "").trim();

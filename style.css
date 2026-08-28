@@ -25,6 +25,24 @@ input, select { font-family: inherit; }
 a { color: #00a8fc; text-decoration: none; }
 .hidden { display: none !important; }
 
+/* Banner de atualização */
+.update-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  padding: 10px 16px; font-size: 14px; font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  animation: slideDown .3s ease;
+}
+@keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+.update-bar button {
+  background: #fff; color: var(--accent); padding: 6px 16px; border-radius: 4px;
+  font-weight: 600; font-size: 13px;
+}
+.update-bar button:hover { background: #e8e8ff; }
+.update-bar button.later { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.5); }
+.update-bar button.later:hover { background: rgba(255,255,255,.15); }
+
 /* ===== Login ===== */
 .auth { height: 100%; display: grid; place-items: center;
   background: radial-gradient(circle at 30% 20%, #404673, #1e1f22 60%); }
